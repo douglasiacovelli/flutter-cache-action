@@ -1,0 +1,38 @@
+name: 'Hello World'
+description: 'Greet someone'
+inputs:
+  flutter-version:  # id of input
+    description: 'Flutter version'
+    required: true
+    default: '1.22.6'
+runs:
+  using: "composite"
+  steps:
+    - name: Cache flutter
+      uses: actions/cache@v2
+      with:
+        path: |
+          ${{ env.FLUTTER_HOME }}/bin
+        key: install-flutter-${{ inputs.flutter-version }}
+        restore-keys: |
+          install-flutter-
+    - name: Cache pubspec dependencies
+      uses: actions/cache@v2
+      with:
+        path: |
+          ${{ env.FLUTTER_HOME }}/.pub-cache
+          **/.packages
+          **/.flutter-plugins
+          **/.flutter-plugin-dependencies
+          **/.dart_tool/package_config.json
+        key: build-pubspec-${{ hashFiles('**/pubspec.lock') }}
+        restore-keys: |
+          build-pubspec-
+    - name: Cache build runner
+      uses: actions/cache@v2
+      with:
+        path: |
+          **/.dart_tool/build
+        key: build-runner-${{ hashFiles('**/asset_graph.json') }}
+        restore-keys: |
+          build-runner-
